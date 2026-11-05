@@ -1,0 +1,6 @@
+.env
+env/
+__pycache__/
+.DS_Store
+*.zip
+Practica_02_Agente_IA/
