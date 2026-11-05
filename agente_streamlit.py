@@ -193,6 +193,15 @@ TOOLS = [
 api_key = os.environ.get("GROQ_API_KEY")
 
 client = Groq(api_key=api_key)
+from supabase import create_client
+
+supabase = create_client(os.environ.get("SUPABASE_URL"), os.environ.get("SUPABASE_KEY"))
+
+def guardar_mensaje(rol, mensaje):
+    try:
+        supabase.table("conversaciones").insert({"rol": rol, "mensaje": mensaje}).execute()
+    except Exception as e:
+        print("Error al guardar en Supabase:", e)
 
 def ejecutar_herramienta(name, args):
     tools = EconomicTools()
@@ -320,6 +329,7 @@ if user_text:
     user_text = user_text.strip()
 
     if user_text:
+        guardar_mensaje("user", user_text)
 
         # Mostrar mensaje del usuario
         st.session_state.chat_history.append(
@@ -359,6 +369,7 @@ if user_text:
 
                 datos_grafica = {}
                 assistant_text = obtener_respuesta(messages, datos_grafica)
+                guardar_mensaje("assistant", assistant_text)
 
                 st.markdown(assistant_text)
                 st.caption(datetime.now().strftime("%H:%M"))
